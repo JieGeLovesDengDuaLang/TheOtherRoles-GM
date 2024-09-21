@@ -12,7 +12,7 @@ namespace TheOtherRoles.Patches
 
         public const string BaseCredentials = $@"<size=130%><color=#ff351f>TheOtherRoles GM</color></size> v{TheOtherRolesPlugin.VersionString} <size=80%>({TheOtherRolesPlugin.SupportString})</size>";
 
-        public const string ContributorsCredentials = "Original TORGM (v3.5.4) GitHub Contributors: Alex2911, amsyarasyiq, gendelo3\nNew Version Among Us Support: JieGeLovesDengDuaLang";
+        public const string ContributorsCredentials = "Original TORGM (v3.5.4) GitHub Contributors: Alex2911, amsyarasyiq, gendelo3\n{0}\n\nNew Version Among Us Support: JieGeLovesDengDuaLang";
 
 
         [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
@@ -132,7 +132,7 @@ namespace TheOtherRoles.Patches
             static bool Prefix(StatsPopup __instance)
             {
                 if (__instance.name != PopupName) return true;
-                __instance.StatsText.text = ContributorsCredentials;
+                __instance.StatsText.text = string.Format(ContributorsCredentials, ModTranslation.GetString("creditsFull"));
                 __instance.transform.Find("GameStatsButton").gameObject.SetActive(false);
                 __instance.transform.Find("RoleStatsButton").gameObject.SetActive(false);
                 __instance.transform.Find("Title_TMP").GetComponent<TextTranslatorTMP>().Destroy();
