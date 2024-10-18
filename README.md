@@ -1,6 +1,8 @@
 # The Other Roles: GM Edition
 
-This fork is based on TORGM v3.5.4, and it supports Among Us `v2024.8.13`.
+This fork is based on TORGM v3.5.4, and it supports Among Us `v2024.9.4`.
+
+---------------
 
 This fork introduces a number of changes to [The Other Roles](https://github.com/Eisbison/TheOtherRoles).
 
@@ -62,6 +64,7 @@ The [Role Assignment](#role-assignment) sections explains how the roles are bein
 # Releases
 | Among Us - Version | Mod Version | Link |
 |----------|-------------|-----------------|
+| 2024.8.13s | v24.8.13.1 (based on v3.5.4 GM) | [Download](https://github.com/JieGeLovesDengDuaLang/TheOtherRoles-GM/releases/download/v24.8.13.1/TheOtherRolesGM.dll)
 | 2022.2.24s | v3.5.4 GM | [Download](https://github.com/yukinogatari/TheOtherRoles-GM/releases/download/v3.5.4/TheOtherRoles-GM.v3.5.4.zip)
 | 2022.2.24s | v3.5.3 GM | [Download](https://github.com/yukinogatari/TheOtherRoles-GM/releases/download/v3.5.3/TheOtherRoles-GM.v3.5.3.zip)
 | 2022.2.8s | v3.5.2 GM | [Download](https://github.com/yukinogatari/TheOtherRoles-GM/releases/download/v3.5.2/TheOtherRoles-GM.v3.5.2.zip)
