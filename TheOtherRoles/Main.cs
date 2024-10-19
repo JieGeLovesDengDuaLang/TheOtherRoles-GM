@@ -67,7 +67,7 @@ namespace TheOtherRoles
             ModTranslation.Load();
             Logger = Log;
             DebugMode = Config.Bind("Custom", "Enable Debug Mode", false);
-            StreamerMode = Config.Bind("Custom", "Enable Streamer Mode", false);
+            //StreamerMode = Config.Bind("Custom", "Enable Streamer Mode", false);
             GhostsSeeTasks = Config.Bind("Custom", "Ghosts See Remaining Tasks", true);
             GhostsSeeRoles = Config.Bind("Custom", "Ghosts See Roles", true);
             GhostsSeeVotes = Config.Bind("Custom", "Ghosts See Votes", true);
