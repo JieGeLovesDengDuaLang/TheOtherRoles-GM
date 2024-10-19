@@ -1,21 +1,17 @@
 ﻿global using Object = UnityEngine.Object;
-using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.IL2CPP;
-using HarmonyLib;
-using Hazel;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Linq;
-using System.Net;
-using System.IO;
-using System;
-using System.Reflection;
-using UnityEngine;
-using TheOtherRoles.Modules;
-using BepInEx.Unity.IL2CPP;
 using AmongUs.Data.Legacy;
 using AmongUs.GameOptions;
+using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Unity.IL2CPP;
+using HarmonyLib;
+using Hazel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TheOtherRoles.Modules;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace TheOtherRoles
 {
@@ -27,6 +23,7 @@ namespace TheOtherRoles
         public const string VersionString = "3.5.4";
         public const string SupportString = "24.9.4.1";
         public static Version Version = Version.Parse(VersionString);
+        public static bool Loaded = false;
         internal static BepInEx.Logging.ManualLogSource Logger;
 
         public Harmony Harmony { get; } = new Harmony(Id);
@@ -38,7 +35,7 @@ namespace TheOtherRoles
         public static ConfigEntry<bool> StreamerMode { get; set; }
         public static ConfigEntry<bool> GhostsSeeTasks { get; set; }
         public static ConfigEntry<bool> GhostsSeeRoles { get; set; }
-        public static ConfigEntry<bool> GhostsSeeVotes{ get; set; }
+        public static ConfigEntry<bool> GhostsSeeVotes { get; set; }
         public static ConfigEntry<bool> ShowRoleSummary { get; set; }
         public static ConfigEntry<bool> HideNameplates { get; set; }
         public static ConfigEntry<bool> ShowLighterDarker { get; set; }
@@ -53,7 +50,8 @@ namespace TheOtherRoles
         public static Sprite ModStamp;
 
         public static IRegionInfo[] defaultRegions;
-        public static void UpdateRegions() {
+        public static void UpdateRegions()
+        {
             ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
             IRegionInfo[] regions = defaultRegions;
 
@@ -96,12 +94,25 @@ namespace TheOtherRoles
             CustomOptionHolder.Load();
             CustomColors.Load();
 
-            Harmony.PatchAll();
+            // Types below must be patched before completely loaded
+            var toPatch = new[]
+            {
+                typeof(FixLoginGlitchPatch), // Patch all after the login logic finished
+                typeof(CustomColors) // Custom colors
+            };
+
+            toPatch.Do(t => Harmony.PatchAll(t));
 
             Logger.LogMessage($"TORGM 354 ({SupportString})");
         }
 
-        public static Sprite GetModStamp() {
+        public static void DoPatch()
+        {
+            Instance.Harmony.PatchAll();
+        }
+
+        public static Sprite GetModStamp()
+        {
             if (ModStamp) return ModStamp;
             return ModStamp = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.ModStamp.png", 150f);
         }
@@ -117,16 +128,35 @@ namespace TheOtherRoles
         }
     }
 
+    [HarmonyPatch]
+    public static class FixLoginGlitchPatch
+    {
+        [HarmonyPatch(typeof(AccountTab), nameof(AccountTab.UpdateVisuals))]
+        [HarmonyPostfix]
+        static void OnLogin()
+        {
+            if (!TheOtherRolesPlugin.Loaded)
+            {
+                TheOtherRolesPlugin.DoPatch();
+                TheOtherRolesPlugin.Loaded = true;
+                SceneManager.LoadScene("MainMenu"); // Reload the main menu to apply patches about it
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(ChatController), nameof(ChatController.Awake))]
-    public static class ChatControllerAwakePatch {
-        private static void Prefix() {
-            if (!EOSManager.Instance.IsMinorOrWaiting()) {
+    public static class ChatControllerAwakePatch
+    {
+        private static void Prefix()
+        {
+            if (!EOSManager.Instance.IsMinorOrWaiting())
+            {
                 LegacySaveManager.chatModeType = 1;
                 LegacySaveManager.isGuest = false;
             }
         }
     }
-    
+
     // Debugging tools
     [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
     public static class DebugManager
@@ -170,7 +200,8 @@ namespace TheOtherRoles
             }*/
 
             // Terminate round
-            if(Input.GetKeyDown(KeyCode.L) && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started) {
+            if (Input.GetKeyDown(KeyCode.L) && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
+            {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForceEnd, Hazel.SendOption.Reliable, -1);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCProcedure.forceEnd();
