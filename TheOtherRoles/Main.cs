@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TheOtherRoles.Modules;
+using TheOtherRoles.Patches;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -98,7 +99,8 @@ namespace TheOtherRoles
             var toPatch = new[]
             {
                 typeof(FixLoginGlitchPatch), // Patch all after the login logic finished
-                typeof(CustomColors) // Custom colors
+                typeof(CustomColors), // Custom colors
+                typeof(CredentialsPatch), // Credentials & Mod stamp
             };
 
             toPatch.Do(t => Harmony.PatchAll(t));
@@ -139,7 +141,6 @@ namespace TheOtherRoles
             {
                 TheOtherRolesPlugin.DoPatch();
                 TheOtherRolesPlugin.Loaded = true;
-                SceneManager.LoadScene("MainMenu"); // Reload the main menu to apply patches about it
             }
         }
     }
