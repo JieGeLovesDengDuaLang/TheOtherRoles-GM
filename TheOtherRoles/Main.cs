@@ -141,6 +141,7 @@ namespace TheOtherRoles
             {
                 TheOtherRolesPlugin.DoPatch();
                 TheOtherRolesPlugin.Loaded = true;
+                SceneManager.LoadScene("MainMenu"); // Idk why but buttons wont show when first load
             }
         }
     }
